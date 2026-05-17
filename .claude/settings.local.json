@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(cnpm install *)",
+      "Bash(node *)",
+      "Bash(curl *)"
+    ]
+  }
+}
