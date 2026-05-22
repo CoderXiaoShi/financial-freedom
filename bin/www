@@ -54,5 +54,5 @@ function onListening() {
     ? "pipe " + addr
     : "port " + addr.port;
   debug("Listening on " + bind);
-  console.log(`🦊 财小喵服务启动: http://localhost:${addr.port}`);
+  console.log(`🦊 至尊宝服务启动: http://localhost:${addr.port}`);
 }

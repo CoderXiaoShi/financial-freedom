@@ -10,6 +10,10 @@ import path from "node:path";
 
 import billsRouter from "./src/routes/bills.js";
 import smsRouter from "./src/routes/sms.js";
+import speakRouter from "./src/routes/speak.js";
+import swaggerRouter from "./src/routes/swagger.js";
+import sseRouter from "./src/routes/sse.js";
+import pageRouter from "./src/routes/page.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -25,7 +29,7 @@ app.use(logger());
 app.use(koaStatic(__dirname + "/public"));
 
 app.use(views(__dirname + "/views", {
-  extension: "pug",
+  extension: "ejs",
 }));
 
 app.use(async (ctx, next) => {
@@ -37,6 +41,10 @@ app.use(async (ctx, next) => {
 
 app.use(billsRouter.routes(), billsRouter.allowedMethods());
 app.use(smsRouter.routes(), smsRouter.allowedMethods());
+app.use(speakRouter.routes(), speakRouter.allowedMethods());
+app.use(swaggerRouter.routes(), swaggerRouter.allowedMethods());
+app.use(sseRouter.routes(), sseRouter.allowedMethods());
+app.use(pageRouter.routes(), pageRouter.allowedMethods());
 
 app.on("error", (err, ctx) => {
   console.error("server error", err, ctx);

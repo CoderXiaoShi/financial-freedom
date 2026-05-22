@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>至尊宝 · 财务管家</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, sans-serif; background: #0a0a0a; color: #e0e0e0; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+    .card { max-width: 480px; width: 100%; padding: 40px 32px; text-align: center; }
+    .avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #ef4444); display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 20px; }
+    h1 { font-size: 24px; margin-bottom: 6px; }
+    .persona { color: #888; font-size: 13px; margin-bottom: 24px; }
+    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+    .dot.on { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+    .dot.off { background: #ef4444; }
+    #status { font-size: 13px; color: #888; margin-bottom: 28px; }
+    audio { width: 100%; margin-top: 20px; display: none; border-radius: 8px; }
+    #bubble { background: #1a1a1a; border-radius: 12px; padding: 20px; margin-top: 16px; font-size: 15px; line-height: 1.6; text-align: left; display: none; color: #ccc; }
+    #bubble .label { font-size: 11px; color: #f59e0b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .log { margin-top: 32px; font-size: 11px; color: #444; max-height: 100px; overflow-y: auto; text-align: left; }
+    .log div { padding: 2px 0; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .listening { animation: pulse 2s infinite; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="avatar">
+      <img src="/images/image.png" alt="至尊宝" width="80" height="80" style="border-radius: 50%;" >
+    </div>
+    <h1>至尊宝</h1>
+    <p class="persona">AI 财务管家 · 月光宝盒加持中</p>
+    <p id="status"><span class="dot off" id="dot"></span><span id="statusText">连接中...</span></p>
+    <audio id="audio" controls></audio>
+    <div id="bubble">
+      <div class="label">至尊宝 说：</div>
+      <div id="bubbleText"></div>
+    </div>
+    <div class="log" id="log"></div>
+  </div>
+
+  <script>
+    const dot = document.getElementById("dot");
+    const statusText = document.getElementById("statusText");
+    const audio = document.getElementById("audio");
+    const bubble = document.getElementById("bubble");
+    const bubbleText = document.getElementById("bubbleText");
+    const log = document.getElementById("log");
+
+    function addLog(msg) {
+      const div = document.createElement("div");
+      div.textContent = new Date().toLocaleTimeString() + "  " + msg;
+      log.prepend(div);
+    }
+
+    function connect() {
+      const es = new EventSource("/api/sse");
+      addLog("SSE 连接中...");
+
+      es.onopen = () => {
+        dot.className = "dot on";
+        statusText.textContent = "已连接，等待通知...";
+        addLog("SSE 已连接");
+      };
+
+      es.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          if (msg.type === "connected") return;
+          if (msg.type === "audio") {
+            addLog("收到语音: " + (msg.text || "").slice(0, 30));
+            bubble.style.display = "block";
+            bubbleText.textContent = msg.text;
+            audio.src = msg.url;
+            audio.style.display = "block";
+            audio.play().catch(() => {});
+          }
+        } catch (e) {
+          addLog("解析错误: " + e.message);
+        }
+      };
+
+      es.onerror = () => {
+        dot.className = "dot off";
+        statusText.textContent = "连接断开，5秒后重连...";
+        addLog("SSE 断线");
+        es.close();
+        setTimeout(connect, 5000);
+      };
+    }
+
+    connect();
+  </script>
+</body>
+</html>

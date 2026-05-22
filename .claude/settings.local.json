@@ -4,7 +4,14 @@
       "Bash(npm install *)",
       "Bash(cnpm install *)",
       "Bash(node *)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "PowerShell(Get-Process *)",
+      "Bash(Get-Process node *)",
+      "Bash(Stop-Process -Force)",
+      "Bash(Start-Sleep -Seconds 1)",
+      "Bash(netstat -ano)",
+      "Bash(Select-String \"LISTENING\")",
+      "Bash(Select-String \":3000\")"
     ]
   }
 }

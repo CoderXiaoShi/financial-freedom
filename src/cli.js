@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { expenseGraph } from "./graphs/expense/graph.js";
 import { readJSON } from "./store.js";
+import { synthToFile } from "./services/tts.js";
 
 const command = process.argv[2];
 const input = process.argv.slice(3).join(" ");
@@ -15,6 +16,9 @@ async function main() {
       break;
     case "advice":
       await handleAdvice();
+      break;
+    case "speak":
+      await handleSpeak(input);
       break;
     default:
       showHelp();
@@ -42,7 +46,19 @@ async function handleAdd(text) {
   console.log(`📊 风险: ${label(result.riskLevel)}`);
 
   if (result.advice) {
-    console.log(`\n💬 财小喵: ${result.advice}`);
+    console.log(`\n💬 至尊宝: ${result.advice}`);
+
+    // warn 或 critical 时自动合成语音
+    if (result.riskLevel === "warn" || result.riskLevel === "critical") {
+      try {
+        console.log("🔊 生成语音提醒...");
+        const filepath = await synthToFile(result.advice);
+        console.log(`🔊 语音保存到: ${filepath}`);
+      } catch (e) {
+        // TTS 失败不阻塞主流程
+        console.log(`⚠️ 语音合成失败: ${e.message}`);
+      }
+    }
   }
 }
 
@@ -86,7 +102,7 @@ async function handleBalance() {
 async function handleAdvice() {
   const data = readJSON("transactions.json") || { transactions: [] };
   if (data.transactions.length === 0) {
-    console.log("💬 财小喵: 还没有消费记录呢，先记一笔吧~");
+    console.log("💬 至尊宝: 还没有消费记录呢，先记一笔吧~");
     return;
   }
 
@@ -95,9 +111,29 @@ async function handleAdvice() {
   });
 
   if (result.advice) {
-    console.log(`💬 财小喵: ${result.advice}`);
+    console.log(`💬 至尊宝: ${result.advice}`);
   } else {
-    console.log("💬 财小喵: 暂无建议，保持良好消费习惯！");
+    console.log("💬 至尊宝: 暂无建议，保持良好消费习惯！");
+  }
+}
+
+async function handleSpeak(text) {
+  // 没有传文本 → 用最新一条 advice 的文本
+  if (!text) {
+    const result = await expenseGraph.invoke({ rawInput: "__ADVICE_ONLY__" });
+    if (!result.advice) {
+      console.log("💬 至尊宝: 暂无建议可说~");
+      return;
+    }
+    text = result.advice;
+  }
+
+  try {
+    console.log(`🔊 合成语音: "${text.slice(0, 40)}${text.length > 40 ? "..." : ""}"`);
+    const filepath = await synthToFile(text);
+    console.log(`✅ 语音保存到: ${filepath}`);
+  } catch (err) {
+    console.error(`❌ 语音合成失败: ${err.message}`);
   }
 }
 
@@ -107,12 +143,13 @@ function label(level) {
 
 function showHelp() {
   console.log(`
-🦊 财小喵 — AI 财务管家
+🦊 至尊宝 — AI 财务管家
 
 用法:
   node src/cli.js add <消费描述>      手动记一笔账
   node src/cli.js balance            查看当月账单和余额
   node src/cli.js advice             获取 AI 消费建议
+  node src/cli.js speak [文本]       合成语音提醒（不传文本则用最新建议）
 `);
 }
 

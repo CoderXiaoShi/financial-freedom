@@ -35,4 +35,67 @@ router.get("/bills", async (ctx) => {
   };
 });
 
+/** OpenAPI 路径定义 */
+const apiDoc = {
+  "/api/bills": {
+    get: {
+      tags: ["账单"],
+      summary: "查询月度账单",
+      description:
+        "查询指定月份的消费汇总，包括预算、已花、剩余、日均及每笔明细。不传参数默认查询当月。",
+      operationId: "getBills",
+      parameters: [
+        {
+          name: "year",
+          in: "query",
+          description: "年份（默认当年）",
+          schema: { type: "integer", example: 2026 },
+        },
+        {
+          name: "month",
+          in: "query",
+          description: "月份 1-12（默认当月）",
+          schema: { type: "integer", example: 5 },
+        },
+      ],
+      responses: {
+        200: {
+          description: "成功",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  year: { type: "integer" },
+                  month: { type: "integer" },
+                  budget: { type: "number" },
+                  totalSpent: { type: "number" },
+                  remaining: { type: "number" },
+                  count: { type: "integer" },
+                  transactions: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        id: { type: "string" },
+                        amount: { type: "number" },
+                        merchant: { type: "string" },
+                        category: { type: "string" },
+                        note: { type: "string" },
+                        time: { type: "string" },
+                        source: { type: "string" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
 export default router;
+export { apiDoc };

@@ -1,12 +1,5 @@
 {
   "monthlyBudget": 3000,
-  "categoryBudgets": {
-    "餐饮": 1200,
-    "购物": 800,
-    "交通": 300,
-    "娱乐": 400,
-    "其他": 300
-  },
   "alertThresholds": {
     "warn": 0.5,
     "critical": 0.2
