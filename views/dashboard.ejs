@@ -27,7 +27,7 @@
 <body>
   <div class="card">
     <div class="avatar">
-      <img src="/images/image.png" alt="至尊宝" width="80" height="80" style="border-radius: 50%;" >
+      <img src="fin/images/image.png" alt="至尊宝" width="80" height="80" style="border-radius: 50%;" >
     </div>
     <h1>至尊宝</h1>
     <p class="persona">AI 财务管家 · 月光宝盒加持中</p>
@@ -55,7 +55,11 @@
     }
 
     function connect() {
-      const es = new EventSource("/api/sse");
+      let url = window.location.origin + "/api/sse";
+      if (location.host === 'coderxiaoshi.nat100.top') {
+        url = window.location.origin + "/fin/api/sse";
+      }
+      const es = new EventSource(url);
       addLog("SSE 连接中...");
 
       es.onopen = () => {

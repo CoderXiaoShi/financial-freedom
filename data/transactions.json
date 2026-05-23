@@ -1,44 +1,14 @@
 {
   "transactions": [
     {
-      "id": "638f51e9-b074-4a63-b2ed-09c462c5fee9",
-      "amount": 2010,
-      "merchant": "美团外卖",
+      "id": "ec23e1f5-def6-4cb4-8e51-1cbf2c4eb3bb",
+      "amount": 11,
+      "merchant": "上海福满家便利有限公司",
       "category": "餐饮",
       "note": "",
-      "time": "2026-05-17",
+      "time": "2026-05-23",
       "source": "sms",
-      "createdAt": "2026-05-22T16:17:11.278Z"
-    },
-    {
-      "id": "09649a7c-3664-4a92-a0cf-063eb0c12877",
-      "amount": 2010,
-      "merchant": "美团外卖",
-      "category": "餐饮",
-      "note": "",
-      "time": "2026-05-17",
-      "source": "sms",
-      "createdAt": "2026-05-22T16:23:02.721Z"
-    },
-    {
-      "id": "148a7f83-c072-4b92-89bc-5eb71c17485d",
-      "amount": 42.5,
-      "merchant": "美团外卖",
-      "category": "餐饮",
-      "note": "",
-      "time": "2026-05-17",
-      "source": "sms",
-      "createdAt": "2026-05-22T16:23:45.193Z"
-    },
-    {
-      "id": "633658fa-b3e3-4ed5-8b46-de5cb8387afc",
-      "amount": 0.1,
-      "merchant": "",
-      "category": "其他",
-      "note": "",
-      "time": "2026-05-17",
-      "source": "sms",
-      "createdAt": "2026-05-22T16:24:23.042Z"
+      "createdAt": "2026-05-23T14:29:07.998Z"
     }
   ]
 }
