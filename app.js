@@ -8,6 +8,7 @@ import views from "koa-views";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
+import apiLogger from "./src/middleware/apiLogger.js";
 import billsRouter from "./src/routes/bills.js";
 import smsRouter from "./src/routes/sms.js";
 import speakRouter from "./src/routes/speak.js";
@@ -32,12 +33,7 @@ app.use(views(__dirname + "/views", {
   extension: "ejs",
 }));
 
-app.use(async (ctx, next) => {
-  const start = new Date();
-  await next();
-  const ms = new Date() - start;
-  console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
-});
+app.use(apiLogger);
 
 app.use(billsRouter.routes(), billsRouter.allowedMethods());
 app.use(smsRouter.routes(), smsRouter.allowedMethods());

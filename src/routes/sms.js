@@ -15,10 +15,10 @@ router.prefix("/api");
  * POST /api/sms
  * 接收短信 webhook，解析后记账。
  * 记账完成后 LLM 判断是否需要语音通知，如需要则生成 TTS 并通过 SSE 推送。
- * Body: { sender, body, receivedAt }
+ * Body: { body, receivedAt }
  */
 router.post("/sms", async (ctx) => {
-  const { body, sender } = ctx.request.body;
+  const { body } = ctx.request.body;
 
   if (!body) {
     ctx.status = 400;
@@ -114,11 +114,6 @@ const apiDoc = {
                   description: "短信原文或手动输入的消费描述",
                   example: "您在美团外卖消费42.5元，订单号12345",
                 },
-                sender: {
-                  type: "string",
-                  description: "短信发送者（可选）",
-                  example: "美团",
-                },
                 receivedAt: {
                   type: "string",
                   description: "短信接收时间，ISO 8601（可选）",
@@ -128,10 +123,10 @@ const apiDoc = {
             },
             examples: {
               外卖消费: {
-                value: { body: "您在美团外卖消费42.5元", sender: "美团" },
+                value: { body: "您在美团外卖消费42.5元" },
               },
               银行短信: {
-                value: { body: "尾号8888借记卡消费286元【招商银行】", sender: "95516" },
+                value: { body: "尾号8888借记卡消费286元【招商银行】" },
               },
               手动输入: {
                 value: { body: "在星巴克买了一杯拿铁38元" },
@@ -157,6 +152,7 @@ const apiDoc = {
                       category: { type: "string", enum: ["餐饮", "购物", "交通", "居住", "娱乐", "医疗", "其他"] },
                       note: { type: "string" },
                       time: { type: "string" },
+                      rawText: { type: "string", description: "短信原文" },
                     },
                   },
                   balance: {

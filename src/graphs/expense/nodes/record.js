@@ -4,7 +4,7 @@ import { addTransaction } from "../../../tools/ledger.js";
  * 记录节点：将解析结果写入 transactions.json。
  */
 async function recordNode(state) {
-  const { transaction, source, error, adviceOnly } = state;
+  const { transaction, source, rawInput, error, adviceOnly } = state;
   if (error || adviceOnly) return {};
 
   try {
@@ -14,6 +14,7 @@ async function recordNode(state) {
       category: transaction.category,
       note: transaction.note,
       time: transaction.time,
+      rawText: rawInput,
     });
 
     const saved = JSON.parse(result);

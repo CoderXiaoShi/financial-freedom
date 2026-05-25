@@ -4,12 +4,13 @@ import { apiDoc as billsDoc } from "./bills.js";
 import { apiDoc as speakDoc } from "./speak.js";
 
 const router = new Router();
+const basePath = process.env.BASE_PATH || "";
 
 /**
  * 自动合并所有 route 模块导出的 apiDoc，生成完整 OpenAPI 3.0 规范。
  * 新增 API 时只需在对应 route 文件中导出 apiDoc 即可，无需手动维护 spec。
  */
-function buildSpec() {
+function buildSpec(baseUrl) {
   return {
     openapi: "3.0.3",
     info: {
@@ -19,7 +20,7 @@ function buildSpec() {
       version: "0.2.0",
     },
     servers: [
-      { url: "http://localhost:3000", description: "本地开发" },
+      { url: baseUrl, description: "当前环境" },
     ],
     tags: [
       { name: "记账", description: "短信解析 & 自动记账" },
@@ -36,7 +37,7 @@ function buildSpec() {
 
 /** GET /api/swagger.json — 自动生成的 OpenAPI 规范 */
 router.get("/api/swagger.json", (ctx) => {
-  ctx.body = buildSpec();
+  ctx.body = buildSpec(basePath);
 });
 
 /** GET /docs — Swagger UI 在线调试页面 */
@@ -61,7 +62,8 @@ router.get("/docs", (ctx) => {
   <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js" crossorigin></script>
   <script>
     SwaggerUIBundle({
-      url: "/api/swagger.json",
+      // url: "${basePath}/api/swagger.json",
+      url: "api/swagger.json",
       dom_id: "#swagger-ui",
       deepLinking: true,
       presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
@@ -122,7 +124,7 @@ router.get("/player", (ctx) => {
       btn.disabled = true;
       status.textContent = "生成中...";
       try {
-        const res = await fetch("/api/speak", {
+        const res = await fetch("${basePath}/api/speak", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text }),

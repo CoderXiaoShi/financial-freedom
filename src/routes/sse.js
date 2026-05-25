@@ -18,18 +18,22 @@ router.get("/api/sse", (ctx) => {
   ctx.status = 200;
   ctx.respond = false;
 
+  // 禁用 socket 超时，保持长连接
+  ctx.req.socket.setTimeout(0);
+  ctx.res.flushHeaders();
+
   // 初始握手
-  ctx.res.write(`data: ${JSON.stringify({ type: "connected" })}\n\n`, "utf-8");
+  write(`data: ${JSON.stringify({ type: "connected" })}\n\n`);
 
   const onPush = (msg) => {
-    ctx.res.write(`data: ${JSON.stringify(msg)}\n\n`, "utf-8");
+    write(`data: ${JSON.stringify(msg)}\n\n`);
   };
 
   bus.on("push", onPush);
 
-  // 心跳，防止代理断开
+  // 心跳，15s 用 data 消息（某些代理会忽略 SSE 注释）
   const heartbeat = setInterval(() => {
-    ctx.res.write(":\n\n", "utf-8");
+    write(`data: ${JSON.stringify({ type: "heartbeat" })}\n\n`);
   }, 15000);
 
   // 客户端断开时清理
@@ -37,6 +41,19 @@ router.get("/api/sse", (ctx) => {
     bus.off("push", onPush);
     clearInterval(heartbeat);
   });
+
+  ctx.req.on("error", () => {
+    bus.off("push", onPush);
+    clearInterval(heartbeat);
+  });
+
+  function write(data) {
+    try {
+      ctx.res.write(data, "utf-8");
+    } catch {
+      // 客户端已断开，忽略写入错误
+    }
+  }
 });
 
 export default router;
