@@ -1,7 +1,0 @@
-{
-  "monthlyBudget": 3000,
-  "alertThresholds": {
-    "warn": 0.5,
-    "critical": 0.2
-  }
-}

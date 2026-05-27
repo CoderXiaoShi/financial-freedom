@@ -5,6 +5,8 @@ import { expenseGraph } from "../graphs/expense/graph.js";
 import { defaultModel } from "../llm/client.js";
 import { synthToFile } from "../services/tts.js";
 import { bus } from "../services/broadcast.js";
+import { readJSON } from "../store.js";
+import { sendMessage } from "../services/feishu.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -54,6 +56,24 @@ router.post("/sms", async (ctx) => {
         });
       } catch (e) {
         console.error("TTS/SSE 失败:", e.message);
+      }
+
+      // 4. 飞书机器人提醒
+      try {
+        const settings = readJSON("settings.json") || {};
+        const feishuChatId = settings.feishuChatId;
+        if (feishuChatId) {
+          const t = result.transaction;
+          const feishuText = [
+            `至尊宝消费提醒`,
+            `${t.merchant || "未知商户"} ${t.category} ¥${t.amount}`,
+            `本月已花 ¥${result.totalSpent} / ¥${result.monthlyBudget}，剩余 ¥${result.remaining}`,
+            result.advice || "",
+          ].join("\n");
+          await sendMessage(feishuChatId, feishuText, "chat_id");
+        }
+      } catch (e) {
+        console.error("飞书提醒发送失败:", e.message);
       }
     }
   }
