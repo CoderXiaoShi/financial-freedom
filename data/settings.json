@@ -1,0 +1,8 @@
+{
+  "feishuChatId": "oc_55187d391279e531b328af60e69a0d5e",
+  "monthlyBudget": 3000,
+  "alertThresholds": {
+    "warn": 0.5,
+    "critical": 0.2
+  }
+}

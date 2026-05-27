@@ -13,7 +13,7 @@ async function checkNode(state) {
     const year = now.getFullYear();
     const month = now.getMonth() + 1;
 
-    const settings = readJSON("settings.json") || { monthlyBudget: 3000, alertThresholds: { warn: 0.5, critical: 0.2 } };
+    const settings = { monthlyBudget: 3000, alertThresholds: { warn: 0.5, critical: 0.2 }, ...(readJSON("settings.json") || {}) };
     const budget = settings.monthlyBudget;
     const thresholds = settings.alertThresholds;
 

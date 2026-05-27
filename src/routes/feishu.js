@@ -159,7 +159,7 @@ async function handleIntent(intent, text) {
     }
 
     case intent.includes("query"): {
-      const settings = readJSON("settings.json") || { monthlyBudget: 3000 };
+      const settings = { monthlyBudget: 3000, ...(readJSON("settings.json") || {}) };
       const budget = settings.monthlyBudget;
       const [txsJson, balJson] = await Promise.all([
         queryTransactions.invoke({ year, month }),

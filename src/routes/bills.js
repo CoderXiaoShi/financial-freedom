@@ -19,7 +19,7 @@ router.get("/bills", async (ctx) => {
     return d.getFullYear() === year && d.getMonth() + 1 === month;
   });
 
-  const settings = readJSON("settings.json") || { monthlyBudget: 3000 };
+  const settings = { monthlyBudget: 3000, ...(readJSON("settings.json") || {}) };
   const totalSpent = txs.reduce((sum, t) => sum + t.amount, 0);
   const budget = settings.monthlyBudget;
   const remaining = budget - totalSpent;

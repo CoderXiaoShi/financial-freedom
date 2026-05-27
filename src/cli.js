@@ -63,7 +63,7 @@ async function handleAdd(text) {
 }
 
 async function handleBalance() {
-  const settings = readJSON("settings.json") || { monthlyBudget: 3000 };
+  const settings = { monthlyBudget: 3000, ...(readJSON("settings.json") || {}) };
   const data = readJSON("transactions.json") || { transactions: [] };
 
   const now = new Date();
